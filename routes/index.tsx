@@ -1,37 +1,27 @@
 import type { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import Counter from "../islands/Counter.tsx";
-import { getCount } from "../utils/db.ts";
+import { ScoreCard } from "../components/Scorecard.tsx";
+import Chopper from "../islands/Chopper.tsx";
+import { getAllScores } from "../utils/db.ts";
+import { useState } from "preact/hooks";
 
-interface HomeProps {
-  start: number;
-}
-
-export const handler: Handlers<HomeProps> = {
+export const handler: Handlers<{scores: [string, number][]}> = {
   async GET(_req, ctx) {
-    let start = await getCount();
-    if (start === null) start = 3;
-    return ctx.render({ start });
+    const scores = await getAllScores();
+    return ctx.render({ scores });
   },
 };
 
-export default function Home(props: PageProps<HomeProps>) {
+export default function Home(props: PageProps<{scores: [string, number][]}>) {
   return (
     <>
       <Head>
-        <title>Fresh App with Deno KV</title>
+        <title>Weird Copter</title>
       </Head>
-      <div class="p-4 mx-auto max-w-screen-md">
-        <img
-          src="/logo.svg"
-          class="w-32 h-32"
-          alt="the fresh logo: a sliced lemon dripping with juice"
-        />
-        <p class="my-6">
-          Welcome to `fresh`. Try updating this message in the
-          ./routes/index.tsx file, and refresh.
-        </p>
-        <Counter start={props.data.start} />
+      <div class="p-4 mx-auto max-w-screen-md flex flex-col items-center gap-8">
+        <div class = "tracking-wide">Hold {`<spacebar>`} to go up. Press {`<enter>`} to go fullscreen.</div>
+          <Chopper />
+          <ScoreCard scores={props.data.scores.sort((a, b) => b[1] - a[1]).slice(0, 10)} />
       </div>
     </>
   );
