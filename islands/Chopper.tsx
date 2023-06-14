@@ -152,7 +152,7 @@ enum ComponentType {
   CHOPPER,
 }
 class GameComponent {
-  /** Chopper / Wall */
+  /** Chopper / Wall (this has NO functional use)*/
   type: ComponentType;
   /** Dimensions of the component */
   width: number;
@@ -189,7 +189,6 @@ class GameComponent {
     // left right top bottom
     const thisB = this.boundary;
     const thatB = that.boundary;
-    console.log(thisB, thatB);
     if (
       thisB[3] < thatB[2] || thisB[2] > thatB[3] || thisB[0] > thatB[1] ||
       thisB[1] < thatB[0]
