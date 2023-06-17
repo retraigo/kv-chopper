@@ -7,11 +7,15 @@ export async function setScore(username: string, newCount: number) {
 }
 
 export async function getAllScores(): Promise<[string, number][]> {
-
+  const promises: Promise<unknown>[] = [];
   const result: [string, number][] = [];
-  const keys = kv.list({prefix: ["score"]})
+  const keys = kv.list({ prefix: ["score"] });
   for await (const entry of keys) {
-    result.push([entry.key[2] as string, (await kv.get(entry.key)).value as number])
+    promises.push(kv.get(entry.key));
+    result.push([entry.key[2], 0]);
   }
+  (await Promise.all(promises)).map((x, i) =>
+    result[i][1] = (x as { value: number }).value
+  );
   return result;
 }
